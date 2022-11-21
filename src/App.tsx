@@ -2,7 +2,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import Loading from './components/loading';
 import Home from './pages/Home';
 import Login from './pages/Login';
 

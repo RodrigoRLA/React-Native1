@@ -3,13 +3,12 @@ import React, { useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AxiosInstance from '../../api/AxiosIntance';
 
+
 import { styles } from './style';
 
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-
-
 
 
   const handleLogin = async () => {
@@ -28,7 +27,6 @@ const Login = ({navigation}) => {
       } else {
         console.log('Erro ao realizar a autentificação');
       }
-
 
     } catch (error) {
       //criar um componente contendo uma mensagem com o Alert para o usuario
