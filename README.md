@@ -1,5 +1,5 @@
 Component de alerta para erros adicionada.
-Header da pagina de login e Home modificados do padrão.
+Header da pagina de login e Home modificados do padrão, por meio do options no App.tsx.
 
 Loading adicionado à pagina Home como:
 
