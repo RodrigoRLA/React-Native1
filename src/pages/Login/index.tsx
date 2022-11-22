@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AxiosInstance from '../../api/AxiosIntance';
 import { DataContext } from '../../context/DataContext';
+import { showAlert } from '../../components/Alertas/ShowAlert'
 
 
 import { styles } from './style';
@@ -10,7 +11,6 @@ import { styles } from './style';
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-
   const {armazenaDadosUsuario} = useContext(DataContext);
 
   const handleLogin = async () => {
@@ -36,16 +36,12 @@ const Login = ({navigation}) => {
       }
 
     } catch (error) {
-      Alert.alert('Deu ruim, meu patrão!');
-      console.log(
-        'Erro ao realizar a autentificação -' + JSON.stringify(error),
+      // Alert.alert('Deu ruim, meu patrão!');
+      showAlert(
+        "Erro de Login", "Deu ruim, meu patrão"
       );
     }
   };
-
-  // useEffect(() =>{
-  //   console.log("Component renderizado")
-  // },[])
 
   return (
     <View style={styles.container}>

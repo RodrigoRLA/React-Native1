@@ -15,7 +15,16 @@ export default () => {
     <DataProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen options={{
+          title: 'Bem vindo(a)!',
+          headerStyle: {
+            backgroundColor: '#f4511e',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}name="Home" component={Home} />
           <Stack.Screen options={{
             headerShown:false,
           }} name="Login" component={Login} />

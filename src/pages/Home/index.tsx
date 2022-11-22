@@ -5,6 +5,8 @@ import AxiosInstance from '../../api/AxiosIntance';
 import { DataContext } from '../../context/DataContext';
 import { DadosEditoraType } from '../../models/DadosEditoraType';
 
+
+ 
 const Item = ({ item, pressionarBotao, backgroundColor, textColor }) => (
   <TouchableOpacity onPress={pressionarBotao} style={[styles.item, backgroundColor]}>
     <Text style={[styles.title, textColor]}>{item.nomeEditora}</Text>
@@ -17,6 +19,7 @@ function Home({navigation}) {
   const [carregar, setCarregar] = useState(false);
   const [dadosEditora, setDadosEditora] = useState<DadosEditoraType[]>([]);
   const [selectedId, setSelectedId] = useState(null);
+
 
 useEffect(() =>{
     setCarregar(true);
@@ -42,7 +45,7 @@ const getAllEditoras = async () => {
 };
 
 const renderItem = ({ item }) => {
-  const backgroundColor = item.codigoEditora === selectedId ? '#6e3b6e' : '#f9c2ff';
+  const backgroundColor = item.codigoEditora === selectedId ? '#D22D13' : '#EA7663';
   const color = item.codigoEditora === selectedId ? 'white' : 'black';
 
   return (
@@ -58,7 +61,7 @@ const renderItem = ({ item }) => {
 if (carregar === true) {
   return (
     <View style={[styles.container, styles.horizontal]}>
-      <ActivityIndicator size="large" color="#1c1c77" />
+      <ActivityIndicator size="large" color="#D22D13" />
     </View>
   );
 }
@@ -69,6 +72,7 @@ if (carregar === true) {
         renderItem={renderItem}
         keyExtractor={(item) => item.codigoEditora}
         extraData={selectedId}
+        horizontal={true}
       />
       </View>
     );
@@ -92,10 +96,15 @@ if (carregar === true) {
     item: {
       padding: 20,
       marginVertical: 8,
-      marginHorizontal: 16,
+      marginHorizontal: 10,
+      width: 150,
+      height: 150,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 25,
     },
     title: {
-      fontSize: 32,
+      fontSize: 22,
     },
   });
 
