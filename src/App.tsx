@@ -5,19 +5,23 @@ import React from 'react';
 import Home from './pages/Home';
 import Login from './pages/Login';
 
+import { DataProvider } from './context/DataContext';
+
 const Stack = createNativeStackNavigator();
 
 export default () => {
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen options={{
-          headerShown:false,
-        }} name="Login" component={Login} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <DataProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen options={{
+            headerShown:false,
+          }} name="Login" component={Login} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </DataProvider>
   );
 };
 

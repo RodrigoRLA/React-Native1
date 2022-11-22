@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AxiosInstance from '../../api/AxiosIntance';
+import { DataContext } from '../../context/DataContext';
 
 
 import { styles } from './style';
@@ -10,8 +11,10 @@ const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
+  const {armazenaDadosUsuario} = useContext(DataContext);
 
   const handleLogin = async () => {
+    var tokenJwt:any = null;
 
     try {
       const retorno = await AxiosInstance.post('/auth/login', {
@@ -21,17 +24,19 @@ const Login = ({navigation}) => {
 
       if (retorno.status === 200){
 
-        navigation.navigate('Home');
+        //Atribuido a variavel tokenJwt o conteudo do retorno.data
+        tokenJwt = retorno.data;
+        //Passando pro metoso do contexto
+        armazenaDadosUsuario(tokenJwt['jwt-token']);
 
+        navigation.navigate('Home');
         // console.log('Retorno: ' + JSON.stringify(retorno.data));
       } else {
         console.log('Erro ao realizar a autentificação');
       }
 
     } catch (error) {
-      //criar um componente contendo uma mensagem com o Alert para o usuario
-      //criar um loading informando ao usuario que a requisição está sendo processada
-      Alert.alert('Deu ruim, meu cria!');
+      Alert.alert('Deu ruim, meu patrão!');
       console.log(
         'Erro ao realizar a autentificação -' + JSON.stringify(error),
       );
