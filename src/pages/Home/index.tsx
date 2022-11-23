@@ -4,8 +4,6 @@ import { ActivityIndicator, FlatList, StatusBar, StyleSheet, Text, TouchableOpac
 import AxiosInstance from '../../api/AxiosIntance';
 import { DataContext } from '../../context/DataContext';
 import { DadosEditoraType } from '../../models/DadosEditoraType';
-
-
  
 const Item = ({ item, pressionarBotao, backgroundColor, textColor }) => (
   <TouchableOpacity onPress={pressionarBotao} style={[styles.item, backgroundColor]}>
@@ -20,7 +18,6 @@ function Home({navigation}) {
   const [dadosEditora, setDadosEditora] = useState<DadosEditoraType[]>([]);
   const [selectedId, setSelectedId] = useState(null);
 
-
 useEffect(() =>{
     setCarregar(true);
     setTimeout(() => {
@@ -28,7 +25,11 @@ useEffect(() =>{
     }, 1500);
 },[]);
 
-useEffect(() =>{
+useEffect(() => {
+  const stackNavigator = navigation.getParent();
+  if(stackNavigator){
+    stackNavigator.setOptions({ title: `Bem-vindo, ${dadosUsuario.nome}`});
+  }
   getAllEditoras();
 },[]);
 
@@ -37,12 +38,17 @@ const getAllEditoras = async () => {
   '/editoras',
   {headers: {'Authorization' : `Bearer ${dadosUsuario.token}`}}
   ).then( resultado => {
-    console.log('Dados das Editoras: ' + JSON.stringify(resultado.data));
+    // console.log('Dados das Editoras: ' + JSON.stringify(resultado.data));
     setDadosEditora(resultado.data);
   }).catch((error) => {
-    console.log('Ocorreu um erro ' + JSON.stringify(error));
+    // console.log('Ocorreu um erro ' + JSON.stringify(error));
   });
 };
+
+const navigateToEditoraHome = (id:any) => {
+  setSelectedId(id);
+  navigation.navigate('HomeEditora', {id:id})
+}
 
 const renderItem = ({ item }) => {
   const backgroundColor = item.codigoEditora === selectedId ? '#D22D13' : '#EA7663';
@@ -51,7 +57,7 @@ const renderItem = ({ item }) => {
   return (
     <Item
       item={item}
-      pressionarBotao={() => setSelectedId(item.codigoEditora)}
+      pressionarBotao={() => navigateToEditoraHome(item.codigoEditora)}
       backgroundColor={{ backgroundColor }}
       textColor={{ color }}
     />
@@ -97,11 +103,11 @@ if (carregar === true) {
       padding: 20,
       marginVertical: 8,
       marginHorizontal: 10,
-      width: 150,
-      height: 150,
+      width: 120,
+      height: 120,
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 25,
+      borderRadius: 20,
     },
     title: {
       fontSize: 22,

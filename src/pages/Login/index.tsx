@@ -29,7 +29,7 @@ const Login = ({navigation}) => {
         //Passando pro metoso do contexto
         armazenaDadosUsuario(tokenJwt['jwt-token']);
 
-        navigation.navigate('Home');
+        navigation.navigate('BottomNavigatorScreen');
         // console.log('Retorno: ' + JSON.stringify(retorno.data));
       } else {
         console.log('Erro ao realizar a autentificação');
