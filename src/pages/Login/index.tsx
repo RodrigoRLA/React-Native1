@@ -2,8 +2,8 @@
 import React, { useContext, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AxiosInstance from '../../api/AxiosIntance';
+import { showAlert } from '../../components/Alertas/ShowAlert';
 import { DataContext } from '../../context/DataContext';
-import { showAlert } from '../../components/Alertas/ShowAlert'
 
 
 import { styles } from './style';
@@ -38,7 +38,7 @@ const Login = ({navigation}) => {
     } catch (error) {
       // Alert.alert('Deu ruim, meu patrão!');
       showAlert(
-        "Erro de Login", "Deu ruim, meu patrão"
+        'Erro de Login', 'Deu ruim, meu patrão'
       );
     }
   };
@@ -55,6 +55,7 @@ const Login = ({navigation}) => {
           onChangeText={setEmail}
           value={email}
           placeholder="E-mail"
+          placeholderTextColor="#fff"
         />
         <TextInput
           style={styles.input}
@@ -62,6 +63,7 @@ const Login = ({navigation}) => {
           value={senha}
           placeholder="Senha"
           secureTextEntry={true}
+          placeholderTextColor="#fff"
         />
       </View>
 

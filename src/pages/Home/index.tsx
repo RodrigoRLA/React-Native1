@@ -1,15 +1,45 @@
 /* eslint-disable prettier/prettier */
 import React, { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AxiosInstance from '../../api/AxiosIntance';
+import { showLoading } from '../../components/Loading/ShowLoading';
 import { DataContext } from '../../context/DataContext';
 import { DadosEditoraType } from '../../models/DadosEditoraType';
- 
-const Item = ({ item, pressionarBotao, backgroundColor, textColor }) => (
-  <TouchableOpacity onPress={pressionarBotao} style={[styles.item, backgroundColor]}>
-    <Text style={[styles.title, textColor]}>{item.nomeEditora}</Text>
+import { DadosLivroType } from '../../models/DadosLivroType';
+
+import { Button, Card, Paragraph, Title } from 'react-native-paper';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { incrementLocalData, removeLocalData, retrieveLocalData, storeLocalData } from '../../services/LocalStorageService';
+
+const Item = ({ item, eventoPressionarBotao }) => (
+  <TouchableOpacity onPress={eventoPressionarBotao}
+      style={styles.btnItem}
+  >
+    <Image source={{uri: item.urlImagem}} resizeMode="contain" style={styles.imgItem} />
+    <Text style={[styles.title]}>{item.nomeEditora}</Text>
   </TouchableOpacity>
 );
+
+const CardLivro = ({ item }) => {
+  return (
+  <Card style={styles.cardLivro}>
+    <Card.Title title={item.nomeLivro} subtitle={item.editora.nomeEditora} />
+    <Card.Cover source={{uri: item.urlImagem}} />
+    <Card.Actions style={{justifyContent:'center'}}>
+      <Button onPress={() => addFavorite(item)}><Ionicons name="heart-circle" color="#000" size={36} /></Button>
+      <Button onPress={() => addCart(item.codigoLivro)}><Ionicons name="cart" color="#000" size={36} /></Button>
+    </Card.Actions>
+  </Card>
+  );
+};
+const addFavorite = (livro:DadosLivroType) => {
+  //console.log(`Favoritos: Livro selecionado: ${JSON.stringify(livro)}`);
+  incrementLocalData('favoritos', livro);
+};
+
+const addCart = (id:number) => {
+  console.log(`Carrinho: Livro selecionado: ${id}`);
+};
 
 function Home({navigation}) {
 
@@ -17,6 +47,8 @@ function Home({navigation}) {
   const [carregar, setCarregar] = useState(false);
   const [dadosEditora, setDadosEditora] = useState<DadosEditoraType[]>([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [selectedLivro, setSelectedLivro] = useState(null);
+  const [dadosLivro, setDadosLivro] = useState<DadosLivroType[]>([]);
 
 useEffect(() =>{
     setCarregar(true);
@@ -26,11 +58,13 @@ useEffect(() =>{
 },[]);
 
 useEffect(() => {
+
   const stackNavigator = navigation.getParent();
-  if(stackNavigator){
+  if (stackNavigator){
     stackNavigator.setOptions({ title: `Bem-vindo, ${dadosUsuario.nome}`});
   }
   getAllEditoras();
+  getAllLivros();
 },[]);
 
 const getAllEditoras = async () => {
@@ -45,10 +79,42 @@ const getAllEditoras = async () => {
   });
 };
 
+const getAllLivros = async () => {
+  AxiosInstance.get(
+    '/livros',
+    {headers: {'Authorization' : `Bearer ${dadosUsuario?.token}`}}
+  ).then( resultado => {
+    //console.log('Dados dos Livros: ' + JSON.stringify(resultado.data));
+
+    resultado.data.map((key:any, indice:number) => (
+      setDadosLivro(dadosLivro => [{
+        codigoLivro: key.codigoLivro,
+        nomeLivro: key.nomeLivro,
+        dataLancamento: key.dataLancamento,
+        codigoIsbn: key.codigoIsbn,
+        nomeImagem: key.nomeImagem,
+        nomeArquivoImagem: key.nomeArquivoImagem,
+        urlImagem: key.urlImagem,
+        editora: {
+          codigoEditora: key.editoraDTO.codigoEditora,
+          nomeEditora: key.editoraDTO.nomeEditora,
+        },
+        autor: {
+          codigoAutor: key.autorDTO.codigoAutor,
+          nomeAutor: key.autorDTO.nomeAutor,
+        },
+      }])
+    ));
+
+  }).catch((error) => {
+    console.log('Ocorreu um erro ao recuperar os dados dos Livros: ' + JSON.stringify(error));
+  });
+};
+
 const navigateToEditoraHome = (id:any) => {
   setSelectedId(id);
-  navigation.navigate('HomeEditora', {id:id})
-}
+  navigation.navigate('HomeEditora', {id:id});
+};
 
 const renderItem = ({ item }) => {
   const backgroundColor = item.codigoEditora === selectedId ? '#D22D13' : '#EA7663';
@@ -57,61 +123,80 @@ const renderItem = ({ item }) => {
   return (
     <Item
       item={item}
-      pressionarBotao={() => navigateToEditoraHome(item.codigoEditora)}
-      backgroundColor={{ backgroundColor }}
-      textColor={{ color }}
+      eventoPressionarBotao={() => navigateToEditoraHome(item.codigoEditora)}
     />
   );
 };
 
 if (carregar === true) {
   return (
-    <View style={[styles.container, styles.horizontal]}>
-      <ActivityIndicator size="large" color="#D22D13" />
-    </View>
+    showLoading()
   );
 }
-    return (
-       <View style={styles.container2}>
-         <FlatList
-        data={dadosEditora}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.codigoEditora}
-        extraData={selectedId}
-        horizontal={true}
-      />
-      </View>
-    );
-  }
+return (
+  <ScrollView style={styles.container}>
+    <FlatList
+      data={dadosEditora}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.codigoEditora}
+      extraData={selectedId}
+      horizontal={true}
+    />
+    <Text style={styles.sectionTitle}>Livros</Text>
+    <FlatList
+      data={dadosLivro}
+      renderItem={CardLivro}
+      keyExtractor={(item, indice) => indice}
+      extraData={setSelectedLivro}
+      horizontal={true}
+    />
+  </ScrollView>
+);
+}
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      marginTop: StatusBar.currentHeight || 0,
-    },
-    horizontal: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      padding: 10,
-    },
-    container2: {
-      flex: 1,
-      marginTop: StatusBar.currentHeight || 0,
-    },
-    item: {
-      padding: 20,
-      marginVertical: 8,
-      marginHorizontal: 10,
-      width: 120,
-      height: 120,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 20,
-    },
-    title: {
-      fontSize: 22,
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
+  item: {
+    marginHorizontal: 8,
+    marginBottom:20,
+    padding:10,
+    width:200,
+    height:200,
+    justifyContent:'center',
+    flexDirection:'row',
+    alignItems:'center',
+  },
+  cardLivro: {
+    marginHorizontal: 8,
+    padding:10,
+    justifyContent:'center',
+  },
+  sectionTitle: {
+    fontSize: 24,
+    marginLeft: 10,
+    marginBottom:6,
+    fontWeight: 'bold',
+  },
+  title: {
+    fontSize: 14,
+    flex:0.8,
+  },
+  btnItem:{
+    flexDirection:'column',
+    alignItems:'center',
+    justifyContent:'center',
+    width:200,
+    height:200,
+    marginBottom: 60,
+  },
+  imgItem:{
+    flex:3,
+    width: 140,
+    height: 140,
+  },
+});
 
 export default Home;

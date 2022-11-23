@@ -20,11 +20,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    
+
   },
   input: {
     borderWidth: 2,
     borderRadius: 10,
+    borderColor: '#fff',
     width: Dimensions.get('window').width * 0.9,
     marginVertical: 10,
     paddingHorizontal: 15,
@@ -37,7 +38,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   botao: {
-    backgroundColor: '#FF4000',
+    backgroundColor: '#F67248',
     width: Dimensions.get('window').width * 0.9,
     padding: 20,
     borderRadius: 10,
