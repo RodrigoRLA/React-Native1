@@ -54,7 +54,6 @@ export default () => {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen options={{
-          title: 'Bem vindo(a)!',
           headerStyle: {
             backgroundColor: '#f4511e',
           },

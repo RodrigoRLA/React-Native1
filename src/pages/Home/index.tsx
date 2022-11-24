@@ -34,7 +34,7 @@ const CardLivro = ({ item }) => {
 };
 const addFavorite = (livro:DadosLivroType) => {
   //console.log(`Favoritos: Livro selecionado: ${JSON.stringify(livro)}`);
-  incrementLocalData('favoritos', livro);
+  incrementLocalData('Favoritos', livro);
 };
 
 const addCart = (id:number) => {

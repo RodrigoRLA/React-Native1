@@ -30,7 +30,7 @@ const HomeEditoras = ({navigation}) => {
 
         const stackNavigator = navigation.getParent();
         if (stackNavigator){
-          stackNavigator.setOptions({ title: 'Editoras'});
+          stackNavigator.setOptions({ title: `Bem-vindo, ${dadosUsuario.nome}`});
         }
         getAllEditoras();
       },[]);
