@@ -22,6 +22,7 @@ const BottomNavigator = () => {
         tabBarLabelStyle:{fontSize: 14},
         tabBarActiveTintColor:'#000',
         tabInactiveTintColor: '#fff',
+        tabBarLabelStyle:{fontSize:14},
       }}
     >
       <TabBottomNavigation.Screen name="HomeTabScreen" component={Home}

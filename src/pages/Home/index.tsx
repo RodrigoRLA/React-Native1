@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import AxiosInstance from '../../api/AxiosIntance';
 import { showLoading } from '../../components/Loading/ShowLoading';
 import { DataContext } from '../../context/DataContext';
@@ -22,8 +22,8 @@ const Item = ({ item, eventoPressionarBotao }) => (
 
 const CardLivro = ({ item }) => {
   return (
-  <Card style={styles.cardLivro}>
-    <Card.Title title={item.nomeLivro} subtitle={item.editora.nomeEditora} />
+  <Card style={styles.cardLivro} >
+    <Card.Title title={item.nomeLivro} subtitle={item.editoraDTO.nomeEditora} />
     <Card.Cover source={{uri: item.urlImagem}} />
     <Card.Actions style={{justifyContent:'center'}}>
       <Button onPress={() => addFavorite(item)}><Ionicons name="heart-circle" color="#000" size={36} /></Button>
@@ -32,14 +32,14 @@ const CardLivro = ({ item }) => {
   </Card>
   );
 };
-const addFavorite = (livro:DadosLivroType) => {
+const addFavorite = (dadosLivro:DadosLivroType) => {
   //console.log(`Favoritos: Livro selecionado: ${JSON.stringify(livro)}`);
-  incrementLocalData('Favoritos', livro);
+  incrementLocalData('favoritos', dadosLivro);
 };
 
-const addCart = (id:number) => {
-  console.log(`Carrinho: Livro selecionado: ${id}`);
-};
+// const addCart = (id:number) => {
+//   console.log(`Carrinho: Livro selecionado: ${id}`);
+// };
 
 function Home({navigation}) {
 
@@ -49,12 +49,13 @@ function Home({navigation}) {
   const [selectedId, setSelectedId] = useState(null);
   const [selectedLivro, setSelectedLivro] = useState(null);
   const [dadosLivro, setDadosLivro] = useState<DadosLivroType[]>([]);
+  const [favoritos, setFavoritos] = useState<DadosLivroType[]>([]);
 
 useEffect(() =>{
     setCarregar(true);
     setTimeout(() => {
         setCarregar(false);
-    }, 1500);
+    }, 500);
 },[]);
 
 useEffect(() => {
@@ -85,9 +86,10 @@ const getAllLivros = async () => {
     {headers: {'Authorization' : `Bearer ${dadosUsuario?.token}`}}
   ).then( resultado => {
     //console.log('Dados dos Livros: ' + JSON.stringify(resultado.data));
-
-    resultado.data.map((key:any, indice:number) => (
-      setDadosLivro(dadosLivro => [{
+    setDadosLivro([]);
+    let arrayLivros = resultado.data;
+    arrayLivros.map(key => (
+      setDadosLivro(current => [...current, {
         codigoLivro: key.codigoLivro,
         nomeLivro: key.nomeLivro,
         dataLancamento: key.dataLancamento,
@@ -95,17 +97,16 @@ const getAllLivros = async () => {
         nomeImagem: key.nomeImagem,
         nomeArquivoImagem: key.nomeArquivoImagem,
         urlImagem: key.urlImagem,
-        editora: {
+        editoraDTO: {
           codigoEditora: key.editoraDTO.codigoEditora,
           nomeEditora: key.editoraDTO.nomeEditora,
         },
-        autor: {
+        autorDTO: {
           codigoAutor: key.autorDTO.codigoAutor,
           nomeAutor: key.autorDTO.nomeAutor,
         },
       }])
     ));
-
   }).catch((error) => {
     console.log('Ocorreu um erro ao recuperar os dados dos Livros: ' + JSON.stringify(error));
   });
@@ -117,8 +118,6 @@ const navigateToEditoraHome = (id:any) => {
 };
 
 const renderItem = ({ item }) => {
-  const backgroundColor = item.codigoEditora === selectedId ? '#D22D13' : '#EA7663';
-  const color = item.codigoEditora === selectedId ? 'white' : 'black';
 
   return (
     <Item
