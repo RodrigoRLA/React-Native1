@@ -5,7 +5,6 @@ import AxiosInstance from '../../api/AxiosIntance';
 import { showAlert } from '../../components/Alertas/ShowAlert';
 import { DataContext } from '../../context/DataContext';
 
-
 import { styles } from './style';
 
 const Login = ({navigation}) => {
@@ -24,19 +23,17 @@ const Login = ({navigation}) => {
 
       if (retorno.status === 200){
 
-        //Atribuido a variavel tokenJwt o conteudo do retorno.data
         tokenJwt = retorno.data;
-        //Passando pro metoso do contexto
+
         armazenaDadosUsuario(tokenJwt['jwt-token']);
 
         navigation.navigate('BottomNavigatorScreen');
-        // console.log('Retorno: ' + JSON.stringify(retorno.data));
+
       } else {
         console.log('Erro ao realizar a autentificação');
       }
 
     } catch (error) {
-      // Alert.alert('Deu ruim, meu patrão!');
       showAlert(
         'Erro de Login', 'Deu ruim, meu patrão'
       );

@@ -1,101 +1,109 @@
 /* eslint-disable prettier/prettier */
 import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, Image, Item, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button, Card, Paragraph, Title } from 'react-native-paper';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { Button, Title } from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AxiosInstance from '../../api/AxiosIntance';
+import { showLoading } from '../../components/Loading/ShowLoading';
 import { DataContext } from '../../context/DataContext';
-import { DadosEditoraType } from '../../models/DadosEditoraType';
 import { DadosLivroType } from '../../models/DadosLivroType';
 import { incrementLocalData, removeLocalData, retrieveLocalData, storeLocalData } from '../../services/LocalStorageService';
 
 const HomeLivro = ({route, navigation}) => {
     const {id} = route.params;
 
-    console.log(`Livro ${id}`);
+    console.log(`Livro: ${id}`);
+
+    const {dadosUsuario} = useContext(DataContext);
+    const [selectedLivro, setSelectedLivro] = useState(0);
+    const [dadosLivro, setDadosLivro] = useState<DadosLivroType>();
+    const [carregar, setCarregar] = useState(false);
+
+    const addFavorite = (dadosLivro:DadosLivroType) => {
+      incrementLocalData('favoritos', dadosLivro);
+    };
+
+    useEffect(() => {
+        getLivroById();
+    },[]);
+
+    useEffect(() =>{
+      setCarregar(true);
+      setTimeout(() => {
+          setCarregar(false);
+      }, 500);
+  },[]);
+
+  if (carregar === true) {
+    return (
+      showLoading()
+    );
+  }
+
+      const getLivroById = async () => {
+        AxiosInstance.get(
+            `/livros/${id}`,
+            {headers: {'Authorization' : `Bearer ${dadosUsuario?.token}`}}
+            ).then( resultado => {
+              console.log('Dados das livro: ' + JSON.stringify(resultado.data));
+              setDadosLivro(resultado.data);
+            }).catch((error) => {
+              console.log('Ocorreu um erro ' + JSON.stringify(error));
+            });
+          };
 
     return (
-        <View>
-            <Text>Livro</Text>
+        <View style={styles.container}>
+                    <View style={styles.cabecalho}>
+                        <Image style={{width: 300,height: 350 }}
+                            source={{ uri: dadosLivro?.urlImagem }}/>
+                    </View>
+                    <View style={styles.conteudo}>
+                        <Title style={styles.titulo}> {dadosLivro?.nomeLivro}</Title>
+                        <Text style={styles.sub}>{dadosLivro?.autorDTO.nomeAutor}</Text>
+                        <Text style={styles.sub}>{dadosLivro?.editoraDTO.nomeEditora}</Text>
+                    </View>
+        <View style={styles.rodape}>
+            <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
+                <Button onPress={() => addFavorite(dadosLivro)}><Ionicons name="heart-circle" color="#000" size={50} /></Button>
+                <Button onPress={() => addCart(dadosLivro?.codigoLivro)}><Ionicons name="cart" color="#000" size={50} /></Button>
+            </View>
         </View>
+    </View>
     );
-
-//     const {dadosUsuario} = useContext(DataContext);
-//     const [selectedLivro, setSelectedLivro] = useState(null);
-//     const [dadosLivro, setDadosLivro] = useState<DadosLivroType[]>([]);
-
-//     useEffect(() => {
-//         getLivroById();
-//     });
-
-//     console.log(`Editora Id: ${id}`);
-
-//     const CardLivro = ({ item }) => {
-//         return (
-//         <Card style={styles.cardLivro}>
-//           <Card.Title title={item.nomeLivro} />
-//           <TouchableOpacity>
-//           <Card.Cover source={{uri: item.urlImagem}} />
-//           </TouchableOpacity>
-//           <Card.Actions style={{justifyContent:'center'}}>
-//             <Button onPress={() => addFavorite(dadosLivro)}><Ionicons name="heart-circle" color="#000" size={36} /></Button>
-//             <Button onPress={() => addCart(item.codigoLivro)}><Ionicons name="cart" color="#000" size={36} /></Button>
-//           </Card.Actions>
-//         </Card>
-//         );
-//       };
-
-//       const renderItem = ({ item }) => {
-//         const backgroundColor = item.codigoEditora === selectedId ? '#D22D13' : '#EA7663';
-//         const color = item.codigoEditora === selectedId ? 'white' : 'black';
-
-//         return (
-//           <Item
-//             item={item}
-//             eventoPressionarBotao={() => navigateToHomeLivro(item.codigoEditora)}
-//           />
-//         );
-//       };
-
-//       const addFavorite = (dadosLivro:DadosLivroType) => {
-//         //console.log(`Favoritos: Livro selecionado: ${JSON.stringify(livro)}`);
-//         incrementLocalData('Favoritos', dadosLivro);
-//       };
-
-
-//     const getLivroById = async () => {
-//         AxiosInstance.get(
-//             `/livros/${id}`,
-//             {headers: {'Authorization' : `Bearer ${dadosUsuario?.token}`}}
-//             ).then( resultado => {
-//               console.log('Dados das livro: ' + JSON.stringify(resultado.data));
-//               setDadosLivro(resultado.data);
-//             }).catch((error) => {
-//               console.log('Ocorreu um erro ' + JSON.stringify(error));
-//             });
-//           };
-
-
-
-//     return (
-//     <ScrollView>
-//         <Text>Home Livro {id}</Text>
-//         <FlatList
-//             data={dadosLivro}
-//             renderItem={CardLivro}
-//             keyExtractor={(item, indice) => indice}
-//             extraData={setSelectedLivro}
-//         />
-//     </ScrollView>
-//     );
-// };
-
-//     const styles = StyleSheet.create({
-//         cardLivro:{
-//             marginHorizontal:8,
-//             padding:10,
-//             justifyContent: 'center',
-//         },
-//     });
 };
+export const styles = StyleSheet.create({
+    container:{
+      flex:1,
+    },
+    cabecalho:{
+      flex: 2,
+      marginTop:50,
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+
+    },
+    conteudo:{
+      flex: 0.5,
+      padding: 20,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
+    titulo:{
+      fontWeight: 'bold',
+      fontSize: 23,
+    },
+    sub:{
+      fontWeight: 'bold',
+      fontSize: 15,
+    },
+    rodape:{
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+
+    },
+
+  });
+
 export default HomeLivro;

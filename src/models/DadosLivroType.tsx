@@ -14,5 +14,5 @@ export type DadosLivroType = {
     autorDTO: {
       codigoAutor: number,
       nomeAutor: string
-    }
-  }
+    };
+  };

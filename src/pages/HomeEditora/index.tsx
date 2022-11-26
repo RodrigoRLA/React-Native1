@@ -1,14 +1,13 @@
 /* eslint-disable prettier/prettier */
 import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button, Card, Paragraph, Title } from 'react-native-paper';
+import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Button, Card } from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AxiosInstance from '../../api/AxiosIntance';
+import { showLoading } from '../../components/Loading/ShowLoading';
 import { DataContext } from '../../context/DataContext';
-import { DadosEditoraType } from '../../models/DadosEditoraType';
 import { DadosLivroType } from '../../models/DadosLivroType';
 import { incrementLocalData, removeLocalData, retrieveLocalData, storeLocalData } from '../../services/LocalStorageService';
-
 
 const HomeEditora = ({route, navigation}) => {
     const {id} = route.params;
@@ -16,15 +15,24 @@ const HomeEditora = ({route, navigation}) => {
     const {dadosUsuario} = useContext(DataContext);
     const [selectedLivro, setSelectedLivro] = useState(null);
     const [dadosLivro, setDadosLivro] = useState<DadosLivroType[]>([]);
+    const [carregar, setCarregar] = useState(false);
 
     useEffect(() => {
         getLivroByEditora();
     },[]);
 
-    // const navigateToHomeLivro = (id:any) => {
-    //     setSelectedId(id);
-    //     navigation.navigate('HomeEditora', {id:id});
-    //   };
+    useEffect(() =>{
+      setCarregar(true);
+      setTimeout(() => {
+          setCarregar(false);
+      }, 500);
+  },[]);
+
+  if (carregar === true) {
+    return (
+      showLoading()
+    );
+  }
 
     console.log(`Editora Id: ${id}`);
 
@@ -32,7 +40,7 @@ const HomeEditora = ({route, navigation}) => {
         return (
         <Card style={styles.cardLivro}>
           <Card.Title title={item.nomeLivro} />
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigateToHomeLivro(item.codigoLivro)}>
           <Card.Cover source={{uri: item.urlImagem}} />
           </TouchableOpacity>
           <Card.Actions style={{justifyContent:'center'}}>
@@ -44,7 +52,6 @@ const HomeEditora = ({route, navigation}) => {
       };
 
       const addFavorite = (dadosLivro:DadosLivroType) => {
-        //console.log(`Favoritos: Livro selecionado: ${JSON.stringify(livro)}`);
         incrementLocalData('Favoritos', dadosLivro);
       };
 
@@ -60,17 +67,20 @@ const HomeEditora = ({route, navigation}) => {
             });
           };
 
-
+          const navigateToHomeLivro = (id: any) => {
+            setSelectedLivro(id);
+            navigation.navigate('HomeLivro', { id: id });
+          };
 
     return (
-    <ScrollView>
+
         <FlatList
             data={dadosLivro}
             renderItem={CardLivro}
             keyExtractor={(item, indice) => indice}
             extraData={setSelectedLivro}
         />
-    </ScrollView>
+
     );
 };
 

@@ -8,6 +8,7 @@ import Favoritos from './pages/Favoritos';
 import Home from './pages/Home';
 import HomeEditora from './pages/HomeEditora';
 import HomeEditoras from './pages/HomeEditoras';
+import HomeLivro from './pages/Livro';
 import Login from './pages/Login';
 
 import { DataProvider } from './context/DataContext';
@@ -66,7 +67,24 @@ export default () => {
           <Stack.Screen options={{
             headerShown:false,
           }} name="Login" component={Login} />
-          <Stack.Screen name="HomeEditora" component={HomeEditora}/>
+          <Stack.Screen options={{
+          headerStyle: {
+            backgroundColor: '#f4511e',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }} name="HomeEditora" component={HomeEditora}/>
+          <Stack.Screen options={{
+          headerStyle: {
+            backgroundColor: '#f4511e',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }} name="HomeLivro" component={HomeLivro}/>
         </Stack.Navigator>
       </NavigationContainer>
     </DataProvider>

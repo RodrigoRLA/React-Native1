@@ -5,4 +5,4 @@ export type DadosEditoraType = {
     nomeImagem:string,
     nomeArquivoImagem:string,
     urlImagem:string,
-  }
+  };

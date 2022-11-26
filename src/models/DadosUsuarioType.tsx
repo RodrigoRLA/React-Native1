@@ -4,4 +4,4 @@ export type DadosUsuarioType = {
     nome:string;
     email:string;
     token:string;
-}
+};

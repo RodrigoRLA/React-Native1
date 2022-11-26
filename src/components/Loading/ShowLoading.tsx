@@ -2,7 +2,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-
 export const showLoading = () => {
 
     return (
@@ -11,7 +10,6 @@ export const showLoading = () => {
         </View>
       );
     };
-
 
   const styles = StyleSheet.create({
     container: {
